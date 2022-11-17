@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/hex"
 	"io/ioutil"
 	"math/rand"
 	"sync"
@@ -323,12 +324,23 @@ func (g *Gateway) downlinkEventHandler(c mqtt.Client, msg mqtt.Message) {
 		log.WithError(err).Error("simulator: unmarshal downlink command error")
 	}
 
-	for devEUI, downChan := range g.devices {
+	// We don't need this since we are not registering any device to the gateway
+	/*
+		for devEUI, downChan := range g.devices {
+			log.WithFields(log.Fields{
+				"dev_eui":    devEUI,
+				"gateway_id": g.gatewayID,
+			}).Debug("simulator: forwarding downlink to device")
+			downChan <- pl
+		}
+	*/
+
+	if len(pl.Items) == 0 {
+		log.Error("Unexpected empty pl.Items")
+	} else {
 		log.WithFields(log.Fields{
-			"dev_eui":    devEUI,
-			"gateway_id": g.gatewayID,
-		}).Debug("simulator: forwarding downlink to device")
-		downChan <- pl
+			"payload": hex.EncodeToString(pl.Items[0].PhyPayload),
+		}).Info("gateway: simulated downlink")
 	}
 
 	time.Sleep(g.downlinkTxAckDelay)

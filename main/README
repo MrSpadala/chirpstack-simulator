@@ -1,0 +1,9 @@
+Simulates uplink messages to the network server.
+For it to work, first register the gateway on the network server.
+Then specify the bytes of the uplink.
+Any downlink will be printed
+
+to run it:
+```
+go run .
+```
